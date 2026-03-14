@@ -5,6 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "active-record",
+    platforms: [
+        .iOS(.v17),
+        .macOS(.v14),
+        .tvOS(.v17),
+        .watchOS(.v10)
+    ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
