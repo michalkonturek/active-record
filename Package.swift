@@ -9,14 +9,14 @@ let package = Package(
         .iOS(.v17),
         .macOS(.v14),
         .tvOS(.v17),
-        .watchOS(.v10)
+        .watchOS(.v10),
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "active-record",
             targets: ["active-record"]
-        ),
+        )
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

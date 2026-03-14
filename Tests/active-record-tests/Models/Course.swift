@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+
 @testable import active_record
 
 @Model
