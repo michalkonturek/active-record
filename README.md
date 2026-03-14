@@ -1,5 +1,10 @@
 # active-record
 
+[![Tests](https://github.com/michalkonturek/active-record/actions/workflows/tests.yml/badge.svg)](https://github.com/michalkonturek/active-record/actions/workflows/tests.yml)
+[![Swift 6.0](https://img.shields.io/badge/Swift-6.0-orange.svg)](https://swift.org)
+[![Platforms](https://img.shields.io/badge/Platforms-iOS%2017%20|%20macOS%2014%20|%20tvOS%2017%20|%20watchOS%2010-blue.svg)](https://developer.apple.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A lightweight Active Record implementation for SwiftData. Adds `Queryable` and `Upsertable` protocols that bring expressive, context-explicit finders and JSON-based upserts to your `@Model` types.
 
 Inspired by [ActiveRecord for Core Data](https://github.com/michalkonturek/ActiveRecord).
