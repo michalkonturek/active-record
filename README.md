@@ -37,8 +37,8 @@ import SwiftData
 import active_record
 
 @Model
-final class Task: Queryable, Upsertable {
-    static var primaryKeyPath: KeyPath<Task, Int> { \.uid }
+final class Todo: Queryable, Upsertable {
+    static var primaryKeyPath: KeyPath<Todo, Int> { \.uid }
     static var primaryCodingKey: String { "uid" }
 
     var uid: Int
@@ -73,36 +73,36 @@ Every method takes a `ModelContext` explicitly — no singletons, no ambient sta
 
 ```swift
 // Fetch all
-let tasks = try Task.all(in: context)
+let tasks = try Todo.all(in: context)
 
 // Filter with predicates
-let pending = try Task.all(where: #Predicate { !$0.completed }, in: context)
+let pending = try Todo.all(where: #Predicate { !$0.completed }, in: context)
 
 // Sort
-let byPriority = try Task.all(
+let byPriority = try Todo.all(
     where: nil,
     sort: SortDescriptor(\.priority, order: .reverse),
     in: context
 )
 
 // Pagination
-let page = try Task.all(where: nil, sort: [], limit: 20, offset: 0, in: context)
+let page = try Todo.all(where: nil, sort: [], limit: 20, offset: 0, in: context)
 
 // First
-let first = try Task.first(in: context)
-let urgent = try Task.first(where: #Predicate { $0.priority >= 3 }, in: context)
+let first = try Todo.first(in: context)
+let urgent = try Todo.first(where: #Predicate { $0.priority >= 3 }, in: context)
 
 // Count & exists
-let count = try Task.count(in: context)
-let hasCompleted = try Task.exists(where: #Predicate { $0.completed }, in: context)
+let count = try Todo.count(in: context)
+let hasCompleted = try Todo.exists(where: #Predicate { $0.completed }, in: context)
 
 // Aggregates
-let highest = try Task.withMaxValue(for: \.priority, in: context)
-let lowest = try Task.withMinValue(for: \.priority, in: context)
+let highest = try Todo.withMaxValue(for: \.priority, in: context)
+let lowest = try Todo.withMinValue(for: \.priority, in: context)
 
 // Delete
-try Task.deleteAll(where: #Predicate { $0.completed }, in: context)
-try Task.deleteAll(in: context)
+try Todo.deleteAll(where: #Predicate { $0.completed }, in: context)
+try Todo.deleteAll(in: context)
 ```
 
 ### Upsertable
@@ -114,10 +114,10 @@ Create or update records from JSON. Matching is based on the primary key — if 
 let json = """
     {"uid": 1, "title": "Review PR", "priority": 2, "completed": false}
     """.data(using: .utf8)!
-let task = try Task.createOrUpdate(from: json, in: context)
+let task = try Todo.createOrUpdate(from: json, in: context)
 
 // From a dictionary
-let task = try Task.createOrUpdate(from: [
+let task = try Todo.createOrUpdate(from: [
     "uid": 1,
     "title": "Review PR",
     "priority": 2,
@@ -131,7 +131,7 @@ let batchJson = """
         {"uid": 11, "title": "Task B", "priority": 2}
     ]
     """.data(using: .utf8)!
-let tasks = try Task.createOrUpdate(fromArray: batchJson, in: context)
+let tasks = try Todo.createOrUpdate(fromArray: batchJson, in: context)
 ```
 
 ## API Reference
