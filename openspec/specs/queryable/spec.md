@@ -80,6 +80,21 @@ SHALL be implemented as `count(where:) > 0`.
 
 SHALL fetch all, then find the element with the max/min value using Swift standard library. If performance is a concern, this can be revisited with sorted fetch + limit 1.
 
+#### Aggregate Queries
+
+- `static func sum<V: AdditiveArithmetic>(for keyPath: KeyPath<Self, V> & Sendable, where predicate: Predicate<Self>? = nil, in context: ModelContext) throws -> V`
+- `static func average<V: BinaryInteger>(for keyPath: KeyPath<Self, V> & Sendable, where predicate: Predicate<Self>? = nil, in context: ModelContext) throws -> Double?`
+- `static func pluck<V>(_ keyPath: KeyPath<Self, V> & Sendable, where predicate: Predicate<Self>? = nil, in context: ModelContext) throws -> [V]`
+
+`sum` SHALL return `V.zero` for empty sets. `average` SHALL return `nil` for empty sets. `pluck` SHALL return an empty array for empty sets. See `openspec/specs/aggregates/spec.md` for detailed requirements.
+
+#### Find or Create
+
+- `static func firstOrCreate(where predicate: Predicate<Self>, in context: ModelContext, create: () -> Self) throws -> Self`
+- `static func firstOrInitialize(where predicate: Predicate<Self>, in context: ModelContext, create: () -> Self) throws -> Self`
+
+`firstOrCreate` SHALL insert the new record into the context. `firstOrInitialize` SHALL NOT insert. Neither SHALL auto-save. See `openspec/specs/find-or-create/spec.md` for detailed requirements.
+
 #### Delete All
 
 - `static func deleteAll(in context: ModelContext) throws`

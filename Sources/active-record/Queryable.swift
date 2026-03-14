@@ -110,6 +110,67 @@ extension Queryable {
         return try context.fetch(descriptor).first
     }
 
+    // MARK: - Aggregates
+
+    public static func sum<V: AdditiveArithmetic>(
+        for keyPath: KeyPath<Self, V> & Sendable,
+        where predicate: Predicate<Self>? = nil,
+        in context: ModelContext
+    ) throws -> V {
+        let objects = try all(where: predicate, sort: [], in: context)
+        return objects.reduce(.zero) { $0 + $1[keyPath: keyPath] }
+    }
+
+    public static func average<V: BinaryInteger>(
+        for keyPath: KeyPath<Self, V> & Sendable,
+        where predicate: Predicate<Self>? = nil,
+        in context: ModelContext
+    ) throws -> Double? {
+        let objects = try all(where: predicate, sort: [], in: context)
+        guard !objects.isEmpty else { return nil }
+        let total = objects.reduce(0.0) { $0 + Double($1[keyPath: keyPath]) }
+        return total / Double(objects.count)
+    }
+
+    public static func pluck<V>(
+        _ keyPath: KeyPath<Self, V> & Sendable,
+        where predicate: Predicate<Self>? = nil,
+        in context: ModelContext
+    ) throws -> [V] {
+        let objects = try all(where: predicate, sort: [], in: context)
+        return objects.map { $0[keyPath: keyPath] }
+    }
+
+    // MARK: - Find or Create
+
+    @discardableResult
+    public static func firstOrCreate(
+        where predicate: Predicate<Self>,
+        in context: ModelContext,
+        create: () -> Self
+    ) throws -> Self {
+        if let existing = try first(where: predicate, in: context) {
+            return existing
+        }
+        let newObject = create()
+        if let timestampable = newObject as? any Timestampable {
+            timestampable.stampCreated()
+        }
+        context.insert(newObject)
+        return newObject
+    }
+
+    public static func firstOrInitialize(
+        where predicate: Predicate<Self>,
+        in context: ModelContext,
+        create: () -> Self
+    ) throws -> Self {
+        if let existing = try first(where: predicate, in: context) {
+            return existing
+        }
+        return create()
+    }
+
     // MARK: - Delete All
 
     public static func deleteAll(in context: ModelContext) throws {

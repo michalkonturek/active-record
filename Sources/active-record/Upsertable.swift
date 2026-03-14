@@ -34,6 +34,9 @@ extension Upsertable {
         }
 
         context.insert(decoded)
+        if let timestampable = decoded as? any Timestampable {
+            timestampable.stampCreated()
+        }
         return decoded
     }
 
