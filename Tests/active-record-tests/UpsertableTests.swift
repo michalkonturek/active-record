@@ -1,6 +1,7 @@
-import Testing
-import SwiftData
 import Foundation
+import SwiftData
+import Testing
+
 @testable import active_record
 
 @Suite("Upsertable")
@@ -27,7 +28,7 @@ struct UpsertableTests {
             "uid": 1,
             "firstName": "Alice",
             "lastName": "Smith",
-            "age": 20
+            "age": 20,
         ])
 
         let student = try Student.createOrUpdate(from: data, in: context)
@@ -52,7 +53,7 @@ struct UpsertableTests {
             "uid": 1,
             "firstName": "Alice",
             "lastName": "Johnson",
-            "age": 21
+            "age": 21,
         ])
 
         let student = try Student.createOrUpdate(from: data, in: context)
@@ -70,7 +71,7 @@ struct UpsertableTests {
 
         let data = try jsonArrayData([
             ["uid": 1, "firstName": "Alice", "lastName": "Smith", "age": 20],
-            ["uid": 2, "firstName": "Bob", "lastName": "Jones", "age": 22]
+            ["uid": 2, "firstName": "Bob", "lastName": "Jones", "age": 22],
         ])
 
         let results = try Student.createOrUpdate(fromArray: data, in: context)
@@ -88,7 +89,7 @@ struct UpsertableTests {
 
         let data = try jsonArrayData([
             ["uid": 1, "firstName": "Alice", "lastName": "Updated", "age": 21],
-            ["uid": 2, "firstName": "Bob", "lastName": "Jones", "age": 22]
+            ["uid": 2, "firstName": "Bob", "lastName": "Jones", "age": 22],
         ])
 
         let results = try Student.createOrUpdate(fromArray: data, in: context)
@@ -105,7 +106,7 @@ struct UpsertableTests {
 
         let data = try jsonArrayData([
             ["uid": 1, "firstName": "Alice", "lastName": "First", "age": 20],
-            ["uid": 1, "firstName": "Alice", "lastName": "Last", "age": 25]
+            ["uid": 1, "firstName": "Alice", "lastName": "Last", "age": 25],
         ])
 
         let results = try Student.createOrUpdate(fromArray: data, in: context)
@@ -134,12 +135,13 @@ struct UpsertableTests {
         let container = try makeTestContainer()
         let context = container.mainContext
 
-        let student = try Student.createOrUpdate(from: [
-            "uid": 1,
-            "firstName": "Alice",
-            "lastName": "Smith",
-            "age": 20
-        ], in: context)
+        let student = try Student.createOrUpdate(
+            from: [
+                "uid": 1,
+                "firstName": "Alice",
+                "lastName": "Smith",
+                "age": 20,
+            ], in: context)
 
         #expect(student.uid == 1)
         #expect(student.firstName == "Alice")
@@ -155,7 +157,7 @@ struct UpsertableTests {
         let data = try jsonData([
             "firstName": "Alice",
             "lastName": "Smith",
-            "age": 20
+            "age": 20,
         ])
 
         #expect(throws: ActiveRecordError.self) {
@@ -170,8 +172,8 @@ struct UpsertableTests {
 
         let data = try jsonData([
             "uid": 1,
-            "firstName": "Alice"
-            // missing required fields
+            "firstName": "Alice",
+                // missing required fields
         ])
 
         #expect(throws: (any Error).self) {
@@ -190,7 +192,7 @@ struct UpsertableTests {
             "uid": 1,
             "firstName": "Alice",
             "lastName": "Smith",
-            "age": 20
+            "age": 20,
         ])
 
         _ = try Student.createOrUpdate(from: data, in: context)

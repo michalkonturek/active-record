@@ -45,7 +45,8 @@ extension Upsertable {
         using decoder: JSONDecoder = JSONDecoder(),
         in context: ModelContext
     ) throws -> [Self] {
-        guard let jsonArray = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
+        guard let jsonArray = try JSONSerialization.jsonObject(with: data) as? [[String: Any]]
+        else {
             return []
         }
         var results: [Self] = []

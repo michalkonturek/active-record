@@ -1,0 +1,23 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Swift on macOS
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint (swift-format)
+        run: xcrun swift-format lint --strict --recursive Sources/ Tests/ Package.swift
+
+      - name: Build
+        run: swift build
+
+      - name: Run tests
+        run: swift test

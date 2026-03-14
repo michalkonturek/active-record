@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+
 @testable import active_record
 
 @Model
@@ -14,7 +15,10 @@ final class Student: Queryable, Upsertable {
     var course: Course?
     @Relationship var modules: [Module]
 
-    init(uid: Int, firstName: String, lastName: String, age: Int, course: Course? = nil, modules: [Module] = []) {
+    init(
+        uid: Int, firstName: String, lastName: String, age: Int, course: Course? = nil,
+        modules: [Module] = []
+    ) {
         self.uid = uid
         self.firstName = firstName
         self.lastName = lastName
