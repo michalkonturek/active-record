@@ -4,13 +4,13 @@ Planned features, priorities, and rough sequencing for active-record.
 
 ## Phased Rollout
 
-### Phase 1 — Quick Wins (single release)
+### Phase 1 — Quick Wins (v1.1.0) ✓
 
 | # | Feature | Effort | Value | Status |
 |---|---------|--------|-------|--------|
-| 1 | More Aggregates (sum, average, pluck) | Low | Medium | Planned |
-| 2 | Find or Create | Low | High | Planned |
-| 3 | Timestamps (Timestampable) | Low | Medium | Planned |
+| 1 | More Aggregates (sum, average, pluck) | Low | Medium | Done (v1.1.0) |
+| 2 | Find or Create | Low | High | Done (v1.1.0) |
+| 3 | Timestamps (Timestampable) | Low | Medium | Done (v1.1.0) |
 
 ### Phase 2 — Medium Effort (one feature per release)
 
