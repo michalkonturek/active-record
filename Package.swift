@@ -24,6 +24,11 @@ let package = Package(
         .target(
             name: "active-record"
         ),
+        .executableTarget(
+            name: "demo",
+            dependencies: ["active-record"],
+            path: "Demo"
+        ),
         .testTarget(
             name: "active-record-tests",
             dependencies: ["active-record"]
