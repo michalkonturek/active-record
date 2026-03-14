@@ -91,17 +91,23 @@ extension Queryable {
     // MARK: - Aggregate Finders
 
     public static func withMaxValue<V: Comparable>(
-        for keyPath: KeyPath<Self, V>,
+        for keyPath: KeyPath<Self, V> & Sendable,
         in context: ModelContext
     ) throws -> Self? {
-        try all(in: context).max(by: { $0[keyPath: keyPath] < $1[keyPath: keyPath] })
+        var descriptor = FetchDescriptor<Self>(
+            sortBy: [SortDescriptor(keyPath, order: .reverse)])
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first
     }
 
     public static func withMinValue<V: Comparable>(
-        for keyPath: KeyPath<Self, V>,
+        for keyPath: KeyPath<Self, V> & Sendable,
         in context: ModelContext
     ) throws -> Self? {
-        try all(in: context).min(by: { $0[keyPath: keyPath] < $1[keyPath: keyPath] })
+        var descriptor = FetchDescriptor<Self>(
+            sortBy: [SortDescriptor(keyPath, order: .forward)])
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first
     }
 
     // MARK: - Delete All
