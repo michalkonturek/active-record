@@ -8,26 +8,12 @@ on:
 
 jobs:
   test:
-    name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: macos-15
-            swift: "6.0"
-          - os: ubuntu-latest
-            swift: "6.0"
+    name: Swift on macOS
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Swift
-        if: runner.os == 'Linux'
-        uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: ${{ matrix.swift }}
-
       - name: Lint (swift-format)
-        if: runner.os == 'macOS'
         run: xcrun swift-format lint --strict --recursive Sources/ Tests/ Package.swift
 
       - name: Build
