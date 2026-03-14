@@ -122,6 +122,57 @@ if let lowest = try Todo.withMinValue(for: \.priority, in: context) {
     // "Write tests (1)"
 }
 
+// MARK: - Queryable: Sum, Average, Pluck
+
+let totalPriority = try Todo.sum(for: \.priority, in: context)
+print("Sum of priorities: \(totalPriority)")
+// 6
+
+let avgPriority = try Todo.average(for: \.priority, in: context)
+print("Average priority: \(avgPriority ?? 0)")
+// 2.0
+
+let filteredSum = try Todo.sum(
+    for: \.priority,
+    where: #Predicate { !$0.completed },
+    in: context
+)
+print("Sum of pending priorities: \(filteredSum)")
+// 5
+
+let titles = try Todo.pluck(\.title, in: context)
+print("All titles: \(titles)")
+// ["Buy groceries", "Write tests", "Deploy app"]
+
+// MARK: - Queryable: Find or Create
+
+let found = try Todo.firstOrCreate(
+    where: #Predicate { $0.uid == 1 },
+    in: context
+) {
+    Todo(uid: 1, title: "Should not be created", priority: 0)
+}
+print("Found existing: \(found.title)")
+// "Buy groceries"
+
+let created2 = try Todo.firstOrCreate(
+    where: #Predicate { $0.uid == 99 },
+    in: context
+) {
+    Todo(uid: 99, title: "Brand new task", priority: 2)
+}
+print("Created new: \(created2.title)")
+// "Brand new task"
+
+// firstOrInitialize does NOT insert into context
+let initialized = try Todo.firstOrInitialize(
+    where: #Predicate { $0.uid == 100 },
+    in: context
+) {
+    Todo(uid: 100, title: "Not yet persisted", priority: 1)
+}
+print("Initialized (not persisted): \(initialized.title)")
+
 // MARK: - Queryable: Delete
 
 try Todo.deleteAll(where: #Predicate { $0.completed }, in: context)

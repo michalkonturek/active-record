@@ -5,7 +5,7 @@
 [![Platforms](https://img.shields.io/badge/Platforms-iOS%2017%20|%20macOS%2014%20|%20tvOS%2017%20|%20watchOS%2010-blue.svg)](https://developer.apple.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A lightweight Active Record implementation for SwiftData. Adds `Queryable` and `Upsertable` protocols that bring expressive, context-explicit finders and JSON-based upserts to your `@Model` types.
+A lightweight Active Record implementation for SwiftData. Adds `Queryable`, `Upsertable`, and `Timestampable` protocols that bring expressive, context-explicit finders, JSON-based upserts, and managed timestamps to your `@Model` types.
 
 Inspired by [ActiveRecord for Core Data](https://github.com/michalkonturek/ActiveRecord).
 
@@ -100,9 +100,41 @@ let hasCompleted = try Todo.exists(where: #Predicate { $0.completed }, in: conte
 let highest = try Todo.withMaxValue(for: \.priority, in: context)
 let lowest = try Todo.withMinValue(for: \.priority, in: context)
 
+let totalPriority = try Todo.sum(for: \.priority, in: context)
+let avgPriority = try Todo.average(for: \.priority, in: context)
+let titles = try Todo.pluck(\.title, in: context)
+
+// Find or create
+let todo = try Todo.firstOrCreate(
+    where: #Predicate { $0.uid == 42 },
+    in: context
+) {
+    Todo(uid: 42, title: "New task", priority: 1)
+}
+
 // Delete
 try Todo.deleteAll(where: #Predicate { $0.completed }, in: context)
 try Todo.deleteAll(in: context)
+```
+
+### Timestampable
+
+Add managed `createdAt` / `updatedAt` timestamps to any model:
+
+```swift
+@Model
+final class Todo: Queryable, Upsertable, Timestampable {
+    // ... existing properties ...
+    var createdAt: Date
+    var updatedAt: Date
+}
+
+// Manual timestamp management
+todo.stampCreated()  // sets both createdAt and updatedAt
+todo.touch()         // sets updatedAt only
+
+// Auto-stamping: createOrUpdate() and firstOrCreate() automatically
+// call stampCreated() on Timestampable models.
 ```
 
 ### Upsertable
@@ -152,6 +184,14 @@ let tasks = try Todo.createOrUpdate(fromArray: batchJson, in: context)
 | `exists(where:in:)` | Any matching records? |
 | `withMaxValue(for:in:)` | Record with max value for key path |
 | `withMinValue(for:in:)` | Record with min value for key path |
+| `sum(for:in:)` | Sum of a numeric key path |
+| `sum(for:where:in:)` | Filtered sum |
+| `average(for:in:)` | Average of an integer key path (returns `Double?`) |
+| `average(for:where:in:)` | Filtered average |
+| `pluck(_:in:)` | Extract single field as `[V]` |
+| `pluck(_:where:in:)` | Filtered pluck |
+| `firstOrCreate(where:in:create:)` | Find or create and insert |
+| `firstOrInitialize(where:in:create:)` | Find or create without inserting |
 | `deleteAll(in:)` | Delete all records |
 | `deleteAll(where:in:)` | Delete matching records |
 
@@ -162,6 +202,15 @@ let tasks = try Todo.createOrUpdate(fromArray: batchJson, in: context)
 | `createOrUpdate(from:in:)` | Upsert from JSON `Data` |
 | `createOrUpdate(from:in:)` | Upsert from `[String: Any]` |
 | `createOrUpdate(fromArray:in:)` | Batch upsert from JSON array |
+
+### Timestampable
+
+| Method | Description |
+|--------|-------------|
+| `touch()` | Sets `updatedAt` to now |
+| `stampCreated()` | Sets both `createdAt` and `updatedAt` to now |
+
+Auto-stamps on `createOrUpdate()` and `firstOrCreate()` when the model conforms to `Timestampable`.
 
 ## License
 
