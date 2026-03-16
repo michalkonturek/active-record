@@ -156,6 +156,9 @@ extension Queryable {
         if let timestampable = newObject as? any Timestampable {
             timestampable.stampCreated()
         }
+        if let validatable = newObject as? any Validatable {
+            try validatable.validate()
+        }
         context.insert(newObject)
         return newObject
     }

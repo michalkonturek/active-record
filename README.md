@@ -5,7 +5,7 @@
 [![Platforms](https://img.shields.io/badge/Platforms-iOS%2017%20|%20macOS%2014%20|%20tvOS%2017%20|%20watchOS%2010-blue.svg)](https://developer.apple.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A lightweight Active Record implementation for SwiftData. Adds `Queryable`, `Upsertable`, `Timestampable`, and `SoftDeletable` protocols that bring expressive, context-explicit finders, JSON-based upserts, managed timestamps, and soft delete to your `@Model` types.
+A lightweight Active Record implementation for SwiftData. Adds `Queryable`, `Upsertable`, `Timestampable`, `SoftDeletable`, and `Validatable` protocols that bring expressive finders, JSON-based upserts, managed timestamps, soft delete, and model validation to your `@Model` types.
 
 Inspired by [ActiveRecord for Core Data](https://github.com/michalkonturek/ActiveRecord).
 
@@ -180,6 +180,40 @@ let trashed = try Post.allOnlyTrashed(in: context) // only soft-deleted
 try Post.destroyAll(in: context)                    // permanent hard delete
 ```
 
+### Validatable
+
+Add runtime validation to any model — write rules in plain Swift:
+
+```swift
+@Model
+final class Item: Queryable, Validatable {
+    var name: String
+    var price: Int
+
+    func validate() throws {
+        var failures: [ValidationError.FieldError] = []
+        if name.isEmpty {
+            failures.append(.init(field: "name", message: "can't be empty"))
+        }
+        if price < 0 {
+            failures.append(.init(field: "price", message: "must be non-negative"))
+        }
+        if !failures.isEmpty {
+            throw ValidationError(failures: failures)
+        }
+    }
+}
+```
+
+**Check validity:**
+
+```swift
+item.isValid  // true or false (no throw)
+try item.validate()  // throws ValidationError with field details
+```
+
+**Auto-validation:** `createOrUpdate()` and `firstOrCreate()` automatically validate models conforming to `Validatable`. Invalid models are rejected before persistence.
+
 ### Upsertable
 
 Create or update records from JSON. Matching is based on the primary key — if a record with the same key exists, it is replaced.
@@ -281,6 +315,15 @@ let tasks = try Todo.createOrUpdate(fromArray: batchJson, in: context)
 | `stampCreated()` | Sets both `createdAt` and `updatedAt` to now |
 
 Auto-stamps on `createOrUpdate()` and `firstOrCreate()` when the model conforms to `Timestampable`.
+
+### Validatable
+
+| Method | Description |
+|--------|-------------|
+| `validate()` | Throws `ValidationError` if model is invalid |
+| `isValid` | Returns `true` if `validate()` does not throw |
+
+Auto-validates on `createOrUpdate()` and `firstOrCreate()` when the model conforms to `Validatable`.
 
 ## License
 
