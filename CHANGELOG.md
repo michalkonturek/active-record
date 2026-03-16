@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Validatable protocol:** New `Validatable` protocol with `func validate() throws` and `isValid` convenience property. `ValidationError` supports per-field failures with `field` and `message`. Auto-validates in `createOrUpdate()` (rolls back on failure) and `firstOrCreate()` (rejects before insert). No rules DSL — write validation logic in plain Swift.
+
 ## [2.0.0] - 2026-03-16
 
 ### Changed

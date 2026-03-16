@@ -19,11 +19,11 @@ Planned features, priorities, and rough sequencing for active-record.
 | 4 | Soft Delete (SoftDeletable) | Medium | High | Done (v1.2.0) |
 | 5 | Batch updateAll | Medium | Medium | Done (v1.2.0) |
 
-### Phase 3 — Needs Spikes / Lower Priority
+### Phase 3 — Validations ✓
 
 | # | Feature | Effort | Value | Status |
 |---|---------|--------|-------|--------|
-| 6 | Validations (Validatable) | High | Medium | Planned |
+| 6 | Validations (Validatable) | Medium | Medium | Done |
 
 ### Deprioritized
 

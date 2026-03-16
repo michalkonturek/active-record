@@ -110,6 +110,10 @@ The system SHALL support custom `CodingKeys` through standard Swift `Decodable` 
 
 When a model conforms to both `Upsertable` and `Timestampable`, the `createOrUpdate(from:in:)` and `createOrUpdate(fromArray:in:)` methods SHALL call `stampCreated()` on each newly inserted model. This SHALL be implemented via a conditional conformance check after insertion. Non-Timestampable models SHALL be unaffected.
 
+### Validatable Integration
+
+When a model conforms to both `Upsertable` and `Validatable`, the `createOrUpdate(from:in:)` and `createOrUpdate(fromArray:in:)` methods SHALL call `validate()` after insertion. If validation fails, the model SHALL be removed from the context and the error re-thrown. Non-Validatable models SHALL be unaffected.
+
 ### Design Constraints
 
 - All methods SHALL accept `ModelContext` as an explicit parameter.

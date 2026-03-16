@@ -101,6 +101,10 @@ SHALL fetch all, then find the element with the max/min value using Swift standa
 
 SHALL fetch matching records and apply the mutation closure to each. SHALL NOT auto-save. Empty set is a no-op. See `openspec/specs/batch-update/spec.md` for detailed requirements.
 
+#### Validatable Integration
+
+When a model conforms to both `Queryable` and `Validatable`, the `firstOrCreate(where:in:create:)` method SHALL call `validate()` on newly created models before insertion. If validation fails, the model SHALL NOT be inserted and `ValidationError` SHALL be thrown. Existing matched models SHALL NOT be validated.
+
 #### Delete All
 
 - `static func deleteAll(in context: ModelContext) throws`

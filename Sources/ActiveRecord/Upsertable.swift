@@ -37,6 +37,14 @@ extension Upsertable {
         if let timestampable = decoded as? any Timestampable {
             timestampable.stampCreated()
         }
+        if let validatable = decoded as? any Validatable {
+            do {
+                try validatable.validate()
+            } catch {
+                context.delete(decoded)
+                throw error
+            }
+        }
         return decoded
     }
 
