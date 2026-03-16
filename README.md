@@ -20,7 +20,7 @@ Add the package to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/michalkonturek/active-record.git", from: "2.0.0"),
+    .package(url: "https://github.com/michalkonturek/active-record.git", from: "2.1.0"),
 ]
 ```
 
