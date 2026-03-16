@@ -20,11 +20,11 @@ Add the package to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/michalkonturek/active-record.git", from: "1.2.0"),
+    .package(url: "https://github.com/michalkonturek/active-record.git", from: "2.0.0"),
 ]
 ```
 
-Then add `"active-record"` as a dependency of your target.
+Then add `"ActiveRecord"` as a dependency of your target.
 
 ## Usage
 
@@ -34,7 +34,7 @@ Conform your `@Model` to `Queryable` for query methods, or to both `Queryable` a
 
 ```swift
 import SwiftData
-import active_record
+import ActiveRecord
 
 @Model
 final class Todo: Queryable, Upsertable {

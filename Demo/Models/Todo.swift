@@ -1,6 +1,6 @@
+import ActiveRecord
 import Foundation
 import SwiftData
-import active_record
 
 @Model
 final class Todo: Queryable, Upsertable {

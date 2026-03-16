@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.0] - 2026-03-16
+## [2.0.0] - 2026-03-16
+
+### Changed
+
+- **BREAKING:** Renamed library target from `active-record` to `ActiveRecord`. Update your imports from `import active_record` to `import ActiveRecord` and your `Package.swift` dependency target from `"active-record"` to `"ActiveRecord"`.
 
 ### Added
 

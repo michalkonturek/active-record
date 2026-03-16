@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 import Testing
 
-@testable import active_record
+@testable import ActiveRecord
 
 @Suite("Timestampable")
 struct TimestampableTests {

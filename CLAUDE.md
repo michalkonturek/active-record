@@ -15,6 +15,6 @@ A lightweight Active Record implementation for Swift Data. Swift package library
 ## Architecture
 
 - **Swift tools version:** 6.0 (strict concurrency by default)
-- **Library target:** `active-record` (Sources/active-record/)
+- **Library target:** `ActiveRecord` (Sources/ActiveRecord/)
 - **Test target:** `active-record-tests` (Tests/active-record-tests/) — uses Swift Testing framework (`import Testing`, `@Test` macro), not XCTest
-- **Module import name:** `active_record` (hyphens become underscores in Swift module names)
+- **Module import name:** `ActiveRecord`

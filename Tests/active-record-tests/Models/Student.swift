@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-@testable import active_record
+@testable import ActiveRecord
 
 @Model
 final class Student: Queryable, Upsertable {

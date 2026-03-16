@@ -14,24 +14,24 @@ let package = Package(
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "active-record",
-            targets: ["active-record"]
+            name: "ActiveRecord",
+            targets: ["ActiveRecord"]
         )
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "active-record"
+            name: "ActiveRecord"
         ),
         .executableTarget(
             name: "demo",
-            dependencies: ["active-record"],
+            dependencies: ["ActiveRecord"],
             path: "Demo"
         ),
         .testTarget(
             name: "active-record-tests",
-            dependencies: ["active-record"]
+            dependencies: ["ActiveRecord"]
         ),
     ]
 )
