@@ -2,42 +2,10 @@ import Foundation
 import SwiftData
 import active_record
 
-// MARK: - Define Your Models
-
-@Model
-final class Todo: Queryable, Upsertable {
-    static var primaryKeyPath: KeyPath<Todo, Int> { \.uid }
-    static var primaryCodingKey: String { "uid" }
-
-    var uid: Int
-    var title: String
-    var priority: Int
-    var completed: Bool
-
-    init(uid: Int, title: String, priority: Int, completed: Bool = false) {
-        self.uid = uid
-        self.title = title
-        self.priority = priority
-        self.completed = completed
-    }
-
-    enum CodingKeys: String, CodingKey {
-        case uid, title, priority, completed
-    }
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        uid = try container.decode(Int.self, forKey: .uid)
-        title = try container.decode(String.self, forKey: .title)
-        priority = try container.decode(Int.self, forKey: .priority)
-        completed = try container.decodeIfPresent(Bool.self, forKey: .completed) ?? false
-    }
-}
-
 // MARK: - Setup
 
 let container = try ModelContainer(
-    for: Todo.self,
+    for: Todo.self, Post.self,
     configurations: ModelConfiguration(isStoredInMemoryOnly: true)
 )
 let context = ModelContext(container)
@@ -239,25 +207,47 @@ try Todo.deleteAll(in: context)
 print("After deleteAll: \(try Todo.count(in: context)) tasks")
 // 0
 
-// MARK: - SoftDeletable & updateAll
-//
-// SoftDeletable adds soft delete support to any Queryable model:
-//
-//   @Model
-//   final class Post: SoftDeletable {
-//       var deletedAt: Date?  // required by SoftDeletable
-//       ...
-//   }
-//
-//   post.softDelete()                          // sets deletedAt
-//   post.restore()                             // clears deletedAt
-//   Post.all(in: context)                      // auto-excludes soft-deleted
-//   Post.allWithTrashed(in: context)           // includes soft-deleted
-//   Post.allOnlyTrashed(in: context)           // only soft-deleted
-//   Post.deleteAll(in: context)                // soft-deletes by default
-//   Post.destroyAll(in: context)               // permanent deletion
-//
-// updateAll applies a mutation closure to matching records:
-//
-//   try Todo.updateAll(in: context) { $0.priority += 1 }
-//   try Todo.updateAll(where: predicate, in: context) { $0.status = "done" }
+// MARK: - SoftDeletable Demo
+
+let post1 = Post(uid: 1, title: "Hello World")
+let post2 = Post(uid: 2, title: "Swift Tips")
+let post3 = Post(uid: 3, title: "Draft Post")
+context.insert(post1)
+context.insert(post2)
+context.insert(post3)
+try context.save()
+
+print("\nPosts: \(try Post.count(in: context))")
+// 3
+
+// Soft delete — sets deletedAt, keeps record in DB
+post3.softDelete()
+try context.save()
+
+print("After soft delete: \(try Post.count(in: context)) visible")
+// 2
+
+print("Including trashed: \(try Post.countWithTrashed(in: context))")
+// 3
+
+print("Only trashed: \(try Post.countOnlyTrashed(in: context))")
+// 1
+
+// Restore
+post3.restore()
+try context.save()
+print("After restore: \(try Post.count(in: context)) visible")
+// 3
+
+// deleteAll soft-deletes by default
+try Post.deleteAll(in: context)
+let visible = try Post.count(in: context)
+let total = try Post.countWithTrashed(in: context)
+print("After deleteAll: \(visible) visible, \(total) total")
+// 0 visible, 3 total
+
+// destroyAll permanently removes
+try Post.destroyAll(in: context)
+try context.save()
+print("After destroyAll: \(try Post.countWithTrashed(in: context)) total")
+// 0
