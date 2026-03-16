@@ -95,6 +95,12 @@ SHALL fetch all, then find the element with the max/min value using Swift standa
 
 `firstOrCreate` SHALL insert the new record into the context. `firstOrInitialize` SHALL NOT insert. Neither SHALL auto-save. See `openspec/specs/find-or-create/spec.md` for detailed requirements.
 
+#### Batch Update
+
+- `static func updateAll(where predicate: Predicate<Self>? = nil, in context: ModelContext, apply: (Self) -> Void) throws`
+
+SHALL fetch matching records and apply the mutation closure to each. SHALL NOT auto-save. Empty set is a no-op. See `openspec/specs/batch-update/spec.md` for detailed requirements.
+
 #### Delete All
 
 - `static func deleteAll(in context: ModelContext) throws`

@@ -171,6 +171,19 @@ extension Queryable {
         return create()
     }
 
+    // MARK: - Update All
+
+    public static func updateAll(
+        where predicate: Predicate<Self>? = nil,
+        in context: ModelContext,
+        apply: (Self) -> Void
+    ) throws {
+        let objects = try all(where: predicate, sort: [], in: context)
+        for object in objects {
+            apply(object)
+        }
+    }
+
     // MARK: - Delete All
 
     public static func deleteAll(in context: ModelContext) throws {

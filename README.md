@@ -5,7 +5,7 @@
 [![Platforms](https://img.shields.io/badge/Platforms-iOS%2017%20|%20macOS%2014%20|%20tvOS%2017%20|%20watchOS%2010-blue.svg)](https://developer.apple.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A lightweight Active Record implementation for SwiftData. Adds `Queryable`, `Upsertable`, and `Timestampable` protocols that bring expressive, context-explicit finders, JSON-based upserts, and managed timestamps to your `@Model` types.
+A lightweight Active Record implementation for SwiftData. Adds `Queryable`, `Upsertable`, `Timestampable`, and `SoftDeletable` protocols that bring expressive, context-explicit finders, JSON-based upserts, managed timestamps, and soft delete to your `@Model` types.
 
 Inspired by [ActiveRecord for Core Data](https://github.com/michalkonturek/ActiveRecord).
 
@@ -20,7 +20,7 @@ Add the package to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/michalkonturek/active-record.git", from: "1.1.0"),
+    .package(url: "https://github.com/michalkonturek/active-record.git", from: "1.2.0"),
 ]
 ```
 
@@ -112,6 +112,9 @@ let todo = try Todo.firstOrCreate(
     Todo(uid: 42, title: "New task", priority: 1)
 }
 
+// Bulk update
+try Todo.updateAll(where: #Predicate { $0.priority < 3 }, in: context) { $0.priority += 1 }
+
 // Delete
 try Todo.deleteAll(where: #Predicate { $0.completed }, in: context)
 try Todo.deleteAll(in: context)
@@ -135,6 +138,40 @@ todo.touch()         // sets updatedAt only
 
 // Auto-stamping: createOrUpdate() and firstOrCreate() automatically
 // call stampCreated() on Timestampable models.
+```
+
+### SoftDeletable
+
+Mark records as deleted without removing them from the database:
+
+```swift
+@Model
+final class Post: SoftDeletable {
+    var uid: Int
+    var title: String
+    var deletedAt: Date?  // required by SoftDeletable
+}
+
+// Soft delete — sets deletedAt, keeps record in DB
+post.softDelete()
+
+// Restore — clears deletedAt
+post.restore()
+
+// Standard queries auto-exclude soft-deleted records
+let posts = try Post.all(in: context)           // only non-deleted
+let count = try Post.count(in: context)         // only non-deleted
+let exists = try Post.exists(in: context)       // only non-deleted
+
+// deleteAll soft-deletes by default
+try Post.deleteAll(in: context)                 // sets deletedAt on all
+
+// Escape hatches
+let all = try Post.allWithTrashed(in: context)  // includes soft-deleted
+let trashed = try Post.allOnlyTrashed(in: context) // only soft-deleted
+
+// Permanent deletion
+try Post.destroyAll(in: context)                // hard delete
 ```
 
 ### Upsertable
@@ -192,8 +229,28 @@ let tasks = try Todo.createOrUpdate(fromArray: batchJson, in: context)
 | `pluck(_:where:in:)` | Filtered pluck |
 | `firstOrCreate(where:in:create:)` | Find or create and insert |
 | `firstOrInitialize(where:in:create:)` | Find or create without inserting |
+| `updateAll(where:in:apply:)` | Bulk update with mutation closure |
 | `deleteAll(in:)` | Delete all records |
 | `deleteAll(where:in:)` | Delete matching records |
+
+### SoftDeletable
+
+| Method | Description |
+|--------|-------------|
+| `softDelete()` | Sets `deletedAt` to now (keeps record) |
+| `restore()` | Clears `deletedAt` |
+| `all(in:)` | Auto-excludes soft-deleted records |
+| `first(in:)` | Auto-excludes soft-deleted records |
+| `count(in:)` | Auto-excludes soft-deleted records |
+| `exists(in:)` | Auto-excludes soft-deleted records |
+| `deleteAll(in:)` | Soft-deletes instead of removing |
+| `destroyAll(in:)` | Permanently deletes all records |
+| `destroyAll(where:in:)` | Permanently deletes matching records |
+| `allWithTrashed(in:)` | All records including soft-deleted |
+| `countWithTrashed(in:)` | Count including soft-deleted |
+| `existsWithTrashed(in:)` | Exists including soft-deleted |
+| `allOnlyTrashed(in:)` | Only soft-deleted records |
+| `countOnlyTrashed(in:)` | Count of soft-deleted records |
 
 ### Upsertable
 

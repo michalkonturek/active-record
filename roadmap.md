@@ -12,12 +12,12 @@ Planned features, priorities, and rough sequencing for active-record.
 | 2 | Find or Create | Low | High | Done (v1.1.0) |
 | 3 | Timestamps (Timestampable) | Low | Medium | Done (v1.1.0) |
 
-### Phase 2 — Medium Effort (one feature per release)
+### Phase 2 — Medium Effort (v1.2.0) ✓
 
 | # | Feature | Effort | Value | Status |
 |---|---------|--------|-------|--------|
-| 4 | Soft Delete (SoftDeletable) | Medium | High | Planned — needs spike |
-| 5 | Batch updateAll | Medium | Medium | Planned |
+| 4 | Soft Delete (SoftDeletable) | Medium | High | Done (v1.2.0) |
+| 5 | Batch updateAll | Medium | Medium | Done (v1.2.0) |
 
 ### Phase 3 — Needs Spikes / Lower Priority
 

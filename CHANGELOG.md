@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2026-03-16
+
+### Added
+
+- **SoftDeletable protocol:** New `SoftDeletable` protocol extending `Queryable` with `deletedAt: Date?`. Provides `softDelete()` and `restore()` instance methods. Standard queries (`all`, `first`, `count`, `exists`, `deleteAll`) auto-exclude soft-deleted records. Escape hatches: `allWithTrashed`, `allOnlyTrashed`, `countWithTrashed`, `countOnlyTrashed`, `existsWithTrashed`. `deleteAll` soft-deletes by default; `destroyAll` for permanent deletion.
+- **Batch update:** `updateAll(where:in:apply:)` on `Queryable` for bulk mutations via closure.
+
 ## [1.1.0] - 2026-03-14
 
 ### Added
