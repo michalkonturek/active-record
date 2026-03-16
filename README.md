@@ -33,8 +33,8 @@ Then add `"ActiveRecord"` as a dependency of your target.
 Conform your `@Model` to `Queryable` for query methods, or to both `Queryable` and `Upsertable` for JSON upsert support:
 
 ```swift
-import SwiftData
 import ActiveRecord
+import SwiftData
 
 @Model
 final class Todo: Queryable, Upsertable {
@@ -71,51 +71,55 @@ final class Todo: Queryable, Upsertable {
 
 Every method takes a `ModelContext` explicitly — no singletons, no ambient state.
 
+**Fetch, filter, sort, and paginate:**
+
 ```swift
-// Fetch all
 let tasks = try Todo.all(in: context)
-
-// Filter with predicates
 let pending = try Todo.all(where: #Predicate { !$0.completed }, in: context)
-
-// Sort
 let byPriority = try Todo.all(
     where: nil,
     sort: SortDescriptor(\.priority, order: .reverse),
     in: context
 )
-
-// Pagination
 let page = try Todo.all(where: nil, sort: [], limit: 20, offset: 0, in: context)
+```
 
-// First
+**First, count, and exists:**
+
+```swift
 let first = try Todo.first(in: context)
 let urgent = try Todo.first(where: #Predicate { $0.priority >= 3 }, in: context)
-
-// Count & exists
 let count = try Todo.count(in: context)
 let hasCompleted = try Todo.exists(where: #Predicate { $0.completed }, in: context)
+```
 
-// Aggregates
+**Aggregates:**
+
+```swift
 let highest = try Todo.withMaxValue(for: \.priority, in: context)
 let lowest = try Todo.withMinValue(for: \.priority, in: context)
-
 let totalPriority = try Todo.sum(for: \.priority, in: context)
 let avgPriority = try Todo.average(for: \.priority, in: context)
 let titles = try Todo.pluck(\.title, in: context)
+```
 
-// Find or create
+**Find or create:**
+
+```swift
 let todo = try Todo.firstOrCreate(
     where: #Predicate { $0.uid == 42 },
     in: context
 ) {
     Todo(uid: 42, title: "New task", priority: 1)
 }
+```
 
-// Bulk update
-try Todo.updateAll(where: #Predicate { $0.priority < 3 }, in: context) { $0.priority += 1 }
+**Bulk update and delete:**
 
-// Delete
+```swift
+try Todo.updateAll(where: #Predicate { $0.priority < 3 }, in: context) {
+    $0.priority += 1
+}
 try Todo.deleteAll(where: #Predicate { $0.completed }, in: context)
 try Todo.deleteAll(in: context)
 ```
@@ -151,49 +155,58 @@ final class Post: SoftDeletable {
     var title: String
     var deletedAt: Date?  // required by SoftDeletable
 }
+```
 
-// Soft delete — sets deletedAt, keeps record in DB
-post.softDelete()
+**Soft delete and restore:**
 
-// Restore — clears deletedAt
-post.restore()
+```swift
+post.softDelete()  // sets deletedAt, keeps record in DB
+post.restore()     // clears deletedAt
+```
 
-// Standard queries auto-exclude soft-deleted records
-let posts = try Post.all(in: context)           // only non-deleted
-let count = try Post.count(in: context)         // only non-deleted
-let exists = try Post.exists(in: context)       // only non-deleted
+**Standard queries auto-exclude soft-deleted records:**
 
-// deleteAll soft-deletes by default
-try Post.deleteAll(in: context)                 // sets deletedAt on all
+```swift
+let posts = try Post.all(in: context)    // only non-deleted
+let count = try Post.count(in: context)  // only non-deleted
+try Post.deleteAll(in: context)          // soft-deletes by default
+```
 
-// Escape hatches
-let all = try Post.allWithTrashed(in: context)  // includes soft-deleted
+**Escape hatches and permanent deletion:**
+
+```swift
+let all = try Post.allWithTrashed(in: context)     // includes soft-deleted
 let trashed = try Post.allOnlyTrashed(in: context) // only soft-deleted
-
-// Permanent deletion
-try Post.destroyAll(in: context)                // hard delete
+try Post.destroyAll(in: context)                    // permanent hard delete
 ```
 
 ### Upsertable
 
 Create or update records from JSON. Matching is based on the primary key — if a record with the same key exists, it is replaced.
 
+**From JSON data:**
+
 ```swift
-// From JSON data
 let json = """
     {"uid": 1, "title": "Review PR", "priority": 2, "completed": false}
     """.data(using: .utf8)!
 let task = try Todo.createOrUpdate(from: json, in: context)
+```
 
-// From a dictionary
+**From a dictionary:**
+
+```swift
 let task = try Todo.createOrUpdate(from: [
     "uid": 1,
     "title": "Review PR",
     "priority": 2,
     "completed": false,
 ], in: context)
+```
 
-// Batch upsert from JSON array
+**Batch upsert from JSON array:**
+
+```swift
 let batchJson = """
     [
         {"uid": 10, "title": "Task A", "priority": 1},
