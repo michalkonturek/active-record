@@ -24,7 +24,10 @@ extension SoftDeletable {
     }
 
     public static func first(in context: ModelContext) throws -> Self? {
-        try all(where: #Predicate { $0.deletedAt == nil }, sort: [], limit: 1, offset: nil, in: context).first
+        try all(
+            where: #Predicate { $0.deletedAt == nil },
+            sort: [], limit: 1, offset: nil, in: context
+        ).first
     }
 
     public static func count(in context: ModelContext) throws -> Int {
