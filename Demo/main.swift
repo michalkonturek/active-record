@@ -239,64 +239,25 @@ try Todo.deleteAll(in: context)
 print("After deleteAll: \(try Todo.count(in: context)) tasks")
 // 0
 
-// MARK: - SoftDeletable Demo
-
-@Model
-final class Post: SoftDeletable {
-    var uid: Int
-    var title: String
-    var deletedAt: Date?
-
-    init(uid: Int, title: String, deletedAt: Date? = nil) {
-        self.uid = uid
-        self.title = title
-        self.deletedAt = deletedAt
-    }
-}
-
-let postContainer = try ModelContainer(
-    for: Post.self,
-    configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-)
-let postContext = ModelContext(postContainer)
-
-let post1 = Post(uid: 1, title: "Hello World")
-let post2 = Post(uid: 2, title: "Swift Tips")
-let post3 = Post(uid: 3, title: "Draft Post")
-postContext.insert(post1)
-postContext.insert(post2)
-postContext.insert(post3)
-try postContext.save()
-
-print("\nPosts: \(try Post.count(in: postContext))")
-// 3
-
-// Soft delete
-post3.softDelete()
-try postContext.save()
-
-print("After soft delete: \(try Post.count(in: postContext)) visible")
-// 2
-
-print("Including trashed: \(try Post.countWithTrashed(in: postContext))")
-// 3
-
-print("Only trashed: \(try Post.countOnlyTrashed(in: postContext))")
-// 1
-
-// Restore
-post3.restore()
-try postContext.save()
-print("After restore: \(try Post.count(in: postContext)) visible")
-// 3
-
-// deleteAll soft-deletes by default
-try Post.deleteAll(in: postContext)
-print("After deleteAll: \(try Post.count(in: postContext)) visible, \(try Post.countWithTrashed(in: postContext)) total")
-// 0 visible, 3 total
-
-// destroyAll permanently removes
-try Post.destroyAll(in: postContext)
-try postContext.save()
-print("After destroyAll: \(try Post.countWithTrashed(in: postContext)) total")
-// 0
+// MARK: - SoftDeletable & updateAll
+//
+// SoftDeletable adds soft delete support to any Queryable model:
+//
+//   @Model
+//   final class Post: SoftDeletable {
+//       var deletedAt: Date?  // required by SoftDeletable
+//       ...
+//   }
+//
+//   post.softDelete()                          // sets deletedAt
+//   post.restore()                             // clears deletedAt
+//   Post.all(in: context)                      // auto-excludes soft-deleted
+//   Post.allWithTrashed(in: context)           // includes soft-deleted
+//   Post.allOnlyTrashed(in: context)           // only soft-deleted
+//   Post.deleteAll(in: context)                // soft-deletes by default
+//   Post.destroyAll(in: context)               // permanent deletion
+//
+// updateAll applies a mutation closure to matching records:
+//
+//   try Todo.updateAll(in: context) { $0.priority += 1 }
+//   try Todo.updateAll(where: predicate, in: context) { $0.status = "done" }
